@@ -68,30 +68,40 @@ if st.button("Dự đoán Thu Nhập", type="primary"):
 st.header("4. Cảnh báo Đạo đức & Hạn chế (Ethics & Limitations)")
 st.warning("⚠️ **Cảnh báo:** Mô hình này được huấn luyện trên dữ liệu cũ. Phân tích Audit cho thấy mô hình có **thiên kiến (bias)**, dự đoán kém chính xác hơn đối với Nữ giới. **Tuyệt đối không sử dụng** mô hình này để ra quyết định tuyển dụng hay trả lương thực tế[cite: 17, 32].")
 
-# 5. Chatbot
-st.header("5. Chatbot Hỗ trợ Dự án 🤖")
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# 5. Tích hợp Chatbot vào thanh Sidebar
+with st.sidebar:
+    st.header("Trợ lý Dự án 🤖")
+    st.markdown("Hỏi tôi về: 'mô hình', 'hạn chế', hoặc 'dữ liệu'")
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    # Khởi tạo lịch sử chat
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-if prompt := st.chat_input("Hỏi tôi về mô hình, hạn chế hoặc dữ liệu..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    # Tạo một container riêng cho tin nhắn để có thể cuộn (scroll)
+    chat_container = st.container(height=400)
 
-    prompt_lower = prompt.lower()
-    if "giải thích" in prompt_lower or "mô hình" in prompt_lower:
-        response = "Mô hình dùng Logistic Regression. Yếu tố tăng thu nhập mạnh nhất là 'Capital Gain' (Thu nhập đầu tư) và 'Married-civ-spouse' (Đã kết hôn)[cite: 17]."
-    elif "hạn chế" in prompt_lower or "thiên kiến" in prompt_lower:
-        response = "Mô hình có thiên kiến giới tính (bias), dự đoán Nữ giới kém chính xác hơn Nam giới. Không suy diễn xã hội hay dùng để phân loại thực tế[cite: 17, 32]."
-    elif "eda" in prompt_lower or "dữ liệu" in prompt_lower:
-        response = "Phân tích EDA chỉ ra người có học vấn cao (Tiến sĩ, Thạc sĩ) và làm nhiều giờ/tuần có thu nhập >50K vượt trội[cite: 17]."
-    else:
-        response = "Tôi là chatbot dự án. Tôi giải đáp về: 'giải thích mô hình', 'hạn chế/thiên kiến', và 'phân tích dữ liệu'."
+    # Hiển thị lịch sử trong container
+    for message in st.session_state.messages:
+        with chat_container.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-    with st.chat_message("assistant"):
-        st.markdown(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    # Ô nhập liệu chat nằm ở dưới cùng của sidebar
+    if prompt := st.chat_input("Nhập câu hỏi tại đây..."):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with chat_container.chat_message("user"):
+            st.markdown(prompt)
+
+        # Logic trả lời
+        prompt_lower = prompt.lower()
+        if "giải thích" in prompt_lower or "mô hình" in prompt_lower:
+            response = "Mô hình dùng Logistic Regression. Yếu tố tăng thu nhập mạnh nhất là 'Capital Gain' (Đầu tư) và 'Married-civ-spouse' (Kết hôn)."
+        elif "hạn chế" in prompt_lower or "thiên kiến" in prompt_lower:
+            response = "Mô hình có thiên kiến giới tính (bias), dự đoán Nữ giới kém chính xác hơn Nam giới. Không dùng để quyết định thực tế."
+        elif "eda" in prompt_lower or "dữ liệu" in prompt_lower:
+            response = "Phân tích cho thấy học vấn cao và làm nhiều giờ/tuần có tỉ lệ đạt thu nhập >50K cao nhất."
+        else:
+            response = "Tôi chỉ giải đáp về: 'mô hình', 'hạn chế', và 'dữ liệu'."
+
+        with chat_container.chat_message("assistant"):
+            st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
