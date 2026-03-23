@@ -1,0 +1,95 @@
+2026-03-23 15:30:56,390 - INFO - Loading data from /mnt/okcomputer/output/adult_income_project/data/raw/adult.csv
+2026-03-23 15:30:56,454 - INFO - Data loaded: 32561 rows, 15 columns
+2026-03-23 15:30:56,463 - INFO - Fitting and transforming data...
+2026-03-23 15:30:56,473 - INFO - Handling missing values...
+2026-03-23 15:30:56,502 - INFO - Missing values ('?') before processing: 4262
+2026-03-23 15:30:56,546 - INFO - Missing values ('?') after processing: 0
+2026-03-23 15:30:56,568 - INFO - Creating preprocessing pipeline...
+2026-03-23 15:30:56,577 - INFO - Preprocessor created successfully
+2026-03-23 15:30:56,691 - INFO - Transformed data shape: (32561, 100)
+2026-03-23 15:30:56,714 - INFO - Target distribution: {0: 24720, 1: 7841}
+2026-03-23 15:30:56,715 - INFO - Starting model training and evaluation...
+2026-03-23 15:30:56,715 - INFO - Creating baseline models...
+2026-03-23 15:30:56,715 - INFO - Creating Logistic Regression models...
+2026-03-23 15:30:56,716 - INFO - Creating Linear SVC models...
+2026-03-23 15:30:56,716 - INFO - Evaluating Majority with Stratified 5-Fold CV...
+2026-03-23 15:30:59,796 - INFO - Majority:
+2026-03-23 15:30:59,797 - INFO -   ROC-AUC: 0.5000 +- 0.0000
+2026-03-23 15:30:59,797 - INFO -   PR-AUC: 0.2408 +- 0.0000
+2026-03-23 15:30:59,797 - INFO -   F1: 0.0000 +- 0.0000
+2026-03-23 15:30:59,797 - INFO - Evaluating Stratified with Stratified 5-Fold CV...
+2026-03-23 15:31:00,038 - INFO - Stratified:
+2026-03-23 15:31:00,038 - INFO -   ROC-AUC: 0.5014 +- 0.0075
+2026-03-23 15:31:00,038 - INFO -   PR-AUC: 0.2415 +- 0.0027
+2026-03-23 15:31:00,038 - INFO -   F1: 0.2418 +- 0.0114
+2026-03-23 15:31:00,038 - INFO - Evaluating LogReg_L1_C0.01 with Stratified 5-Fold CV...
+2026-03-23 15:31:00,954 - INFO - LogReg_L1_C0.01:
+2026-03-23 15:31:00,954 - INFO -   ROC-AUC: 0.8981 +- 0.0014
+2026-03-23 15:31:00,955 - INFO -   PR-AUC: 0.7500 +- 0.0091
+2026-03-23 15:31:00,955 - INFO -   F1: 0.6309 +- 0.0050
+2026-03-23 15:31:00,955 - INFO - Evaluating LogReg_L1_C0.1 with Stratified 5-Fold CV...
+2026-03-23 15:31:04,264 - INFO - LogReg_L1_C0.1:
+2026-03-23 15:31:04,264 - INFO -   ROC-AUC: 0.9062 +- 0.0018
+2026-03-23 15:31:04,264 - INFO -   PR-AUC: 0.7659 +- 0.0089
+2026-03-23 15:31:04,264 - INFO -   F1: 0.6562 +- 0.0069
+2026-03-23 15:31:04,265 - INFO - Evaluating LogReg_L1_C1 with Stratified 5-Fold CV...
+2026-03-23 15:31:14,942 - INFO - LogReg_L1_C1:
+2026-03-23 15:31:14,942 - INFO -   ROC-AUC: 0.9068 +- 0.0017
+2026-03-23 15:31:14,942 - INFO -   PR-AUC: 0.7672 +- 0.0088
+2026-03-23 15:31:14,943 - INFO -   F1: 0.6626 +- 0.0070
+2026-03-23 15:31:14,943 - INFO - Evaluating LogReg_L1_C10 with Stratified 5-Fold CV...
+2026-03-23 15:31:42,352 - INFO - LogReg_L1_C10:
+2026-03-23 15:31:42,352 - INFO -   ROC-AUC: 0.9066 +- 0.0018
+2026-03-23 15:31:42,352 - INFO -   PR-AUC: 0.7668 +- 0.0089
+2026-03-23 15:31:42,352 - INFO -   F1: 0.6622 +- 0.0074
+2026-03-23 15:31:42,352 - INFO - Evaluating LogReg_L2_C0.01 with Stratified 5-Fold CV...
+2026-03-23 15:31:42,999 - INFO - LogReg_L2_C0.01:
+2026-03-23 15:31:42,999 - INFO -   ROC-AUC: 0.9035 +- 0.0019
+2026-03-23 15:31:42,999 - INFO -   PR-AUC: 0.7578 +- 0.0101
+2026-03-23 15:31:42,999 - INFO -   F1: 0.6426 +- 0.0051
+2026-03-23 15:31:42,999 - INFO - Evaluating LogReg_L2_C0.1 with Stratified 5-Fold CV...
+2026-03-23 15:31:43,880 - INFO - LogReg_L2_C0.1:
+2026-03-23 15:31:43,880 - INFO -   ROC-AUC: 0.9066 +- 0.0018
+2026-03-23 15:31:43,881 - INFO -   PR-AUC: 0.7666 +- 0.0090
+2026-03-23 15:31:43,881 - INFO -   F1: 0.6596 +- 0.0071
+2026-03-23 15:31:43,881 - INFO - Evaluating LogReg_L2_C1 with Stratified 5-Fold CV...
+2026-03-23 15:31:45,146 - INFO - LogReg_L2_C1:
+2026-03-23 15:31:45,146 - INFO -   ROC-AUC: 0.9067 +- 0.0017
+2026-03-23 15:31:45,146 - INFO -   PR-AUC: 0.7670 +- 0.0088
+2026-03-23 15:31:45,147 - INFO -   F1: 0.6624 +- 0.0070
+2026-03-23 15:31:45,147 - INFO - Evaluating LogReg_L2_C10 with Stratified 5-Fold CV...
+2026-03-23 15:31:47,361 - INFO - LogReg_L2_C10:
+2026-03-23 15:31:47,361 - INFO -   ROC-AUC: 0.9066 +- 0.0018
+2026-03-23 15:31:47,361 - INFO -   PR-AUC: 0.7668 +- 0.0090
+2026-03-23 15:31:47,361 - INFO -   F1: 0.6627 +- 0.0072
+2026-03-23 15:31:47,362 - INFO - Evaluating LinearSVC_C0.01 with Stratified 5-Fold CV...
+2026-03-23 15:31:48,103 - INFO - LinearSVC_C0.01:
+2026-03-23 15:31:48,103 - INFO -   ROC-AUC: 0.9064 +- 0.0014
+2026-03-23 15:31:48,103 - INFO -   PR-AUC: 0.7666 +- 0.0088
+2026-03-23 15:31:48,103 - INFO -   F1: 0.6535 +- 0.0078
+2026-03-23 15:31:48,103 - INFO - Evaluating LinearSVC_C0.1 with Stratified 5-Fold CV...
+2026-03-23 15:31:49,207 - INFO - LinearSVC_C0.1:
+2026-03-23 15:31:49,207 - INFO -   ROC-AUC: 0.9065 +- 0.0014
+2026-03-23 15:31:49,208 - INFO -   PR-AUC: 0.7669 +- 0.0086
+2026-03-23 15:31:49,208 - INFO -   F1: 0.6591 +- 0.0079
+2026-03-23 15:31:49,208 - INFO - Evaluating LinearSVC_C1 with Stratified 5-Fold CV...
+2026-03-23 15:31:50,945 - INFO - LinearSVC_C1:
+2026-03-23 15:31:50,945 - INFO -   ROC-AUC: 0.9065 +- 0.0015
+2026-03-23 15:31:50,945 - INFO -   PR-AUC: 0.7668 +- 0.0087
+2026-03-23 15:31:50,945 - INFO -   F1: 0.6591 +- 0.0067
+2026-03-23 15:31:50,945 - INFO - Evaluating LinearSVC_C10 with Stratified 5-Fold CV...
+2026-03-23 15:31:52,994 - INFO - LinearSVC_C10:
+2026-03-23 15:31:52,994 - INFO -   ROC-AUC: 0.9065 +- 0.0016
+2026-03-23 15:31:52,994 - INFO -   PR-AUC: 0.7668 +- 0.0088
+2026-03-23 15:31:52,994 - INFO -   F1: 0.6588 +- 0.0072
+2026-03-23 15:31:52,994 - INFO - Plotting ROC curves...
+2026-03-23 15:32:05,629 - INFO - Saved: /mnt/okcomputer/output/adult_income_project/reports/figures/roc_curves.png
+2026-03-23 15:32:05,631 - INFO - Plotting PR curves...
+2026-03-23 15:32:18,168 - INFO - Saved: /mnt/okcomputer/output/adult_income_project/reports/figures/pr_curves.png
+2026-03-23 15:32:18,168 - INFO - Plotting coefficient analysis...
+2026-03-23 15:32:19,524 - INFO - Saved: /mnt/okcomputer/output/adult_income_project/reports/figures/coefficient_plot.png
+2026-03-23 15:32:19,525 - INFO - Saving results table...
+2026-03-23 15:32:19,545 - INFO - Saved: /mnt/okcomputer/output/adult_income_project/reports/figures/model_comparison.csv
+2026-03-23 15:32:19,546 - INFO - Saving best model...
+2026-03-23 15:32:21,770 - INFO - Best model: LogReg_L1_C1 (ROC-AUC: 0.9068)
+2026-03-23 15:32:21,805 - INFO - Preprocessor saved to /mnt/okcomputer/output/adult_income_project/models/preprocessor.joblib

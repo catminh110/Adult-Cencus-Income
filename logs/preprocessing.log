@@ -1,0 +1,12 @@
+2026-03-23 15:30:16,827 - INFO - Loading data from /mnt/okcomputer/output/adult_income_project/data/raw/adult.csv
+2026-03-23 15:30:17,028 - INFO - Data loaded: 32561 rows, 15 columns
+2026-03-23 15:30:17,073 - INFO - Fitting and transforming data...
+2026-03-23 15:30:17,073 - INFO - Handling missing values...
+2026-03-23 15:30:17,093 - INFO - Missing values ('?') before processing: 4262
+2026-03-23 15:30:17,129 - INFO - Missing values ('?') after processing: 0
+2026-03-23 15:30:17,143 - INFO - Creating preprocessing pipeline...
+2026-03-23 15:30:17,143 - INFO - Preprocessor created successfully
+2026-03-23 15:30:17,250 - INFO - Transformed data shape: (32561, 100)
+2026-03-23 15:30:17,251 - INFO - Target distribution: {0: 24720, 1: 7841}
+2026-03-23 15:30:35,765 - INFO - Processed data saved to /mnt/okcomputer/output/adult_income_project/data/processed/adult_processed.csv
+2026-03-23 15:30:35,784 - INFO - Preprocessor saved to /mnt/okcomputer/output/adult_income_project/models/preprocessor.joblib

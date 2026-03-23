@@ -1,107 +1,322 @@
-import streamlit as st
-import pandas as pd
-import joblib
+"""
+Flask Web Application for Adult Census Income Prediction
+Features: Prediction, Explanation, Ethics/Limitations
+"""
+from flask import Flask, render_template, request, jsonify
+import sys
 import os
+import joblib
+import numpy as np
+import pandas as pd
+import json
 
-# 1. Tải mô hình đã lưu (Dùng đường dẫn tuyệt đối để chống lỗi FileNotFoundError)
-current_dir = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(current_dir, '..', 'src', 'models', 'income_classifier.pkl')
-model = joblib.load(model_path)
+# Add src to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-st.title("Dự đoán Thu nhập Adult Census 💵")
-st.markdown("App đáp ứng yêu cầu: Nhập thông tin → Dự đoán + Giải thích (Explain) + Cảnh báo (Ethics/Limitations)")
+app = Flask(__name__)
 
-# --- TỪ ĐIỂN MAP TIẾNG VIỆT -> TIẾNG ANH ---
-workclass_map = {'Tư nhân': 'Private', 'Công chức địa phương': 'Local-gov', 'Tự kinh doanh (cá nhân)': 'Self-emp-not-inc', 'Chính phủ liên bang': 'Federal-gov', 'Chính quyền bang': 'State-gov', 'Tự kinh doanh (doanh nghiệp)': 'Self-emp-inc', 'Làm không lương': 'Without-pay'}
-edu_map = {'Cử nhân Đại học': 'Bachelors', 'Học một số môn Đại học': 'Some-college', 'Lớp 11': '11th', 'Tốt nghiệp Cấp 3': 'HS-grad', 'Trường Cao đẳng/Nghề': 'Prof-school', 'Cao đẳng học thuật': 'Assoc-acdm', 'Cao đẳng nghề': 'Assoc-voc', 'Lớp 9': '9th', 'Lớp 7-8': '7th-8th', 'Lớp 12': '12th', 'Thạc sĩ': 'Masters', 'Lớp 1-4': '1st-4th', 'Lớp 10': '10th', 'Tiến sĩ': 'Doctorate', 'Lớp 5-6': '5th-6th', 'Mẫu giáo': 'Preschool'}
-marital_map = {'Đã kết hôn': 'Married-civ-spouse', 'Đã ly hôn': 'Divorced', 'Độc thân (chưa từng kết hôn)': 'Never-married', 'Ly thân': 'Separated', 'Góa': 'Widowed', 'Kết hôn nhưng vợ/chồng vắng mặt': 'Married-spouse-absent', 'Kết hôn (vợ/chồng trong quân đội)': 'Married-AF-spouse'}
-occ_map = {'Hỗ trợ kỹ thuật': 'Tech-support', 'Thợ thủ công/Sửa chữa': 'Craft-repair', 'Dịch vụ khác': 'Other-service', 'Nhân viên Bán hàng/Chứng khoán': 'Sales', 'Quản lý/Giám đốc': 'Exec-managerial', 'Chuyên gia/Bác sĩ/Kỹ sư': 'Prof-specialty', 'Lao động tay chân/Dọn dẹp': 'Handlers-cleaners', 'Vận hành máy móc': 'Machine-op-inspct', 'Hành chính/Văn thư': 'Adm-clerical', 'Nông nghiệp/Đánh bắt': 'Farming-fishing', 'Vận tải/Tài xế': 'Transport-moving', 'Giúp việc nhà': 'Priv-house-serv', 'Bảo vệ/An ninh': 'Protective-serv', 'Lực lượng vũ trang': 'Armed-Forces'}
-rel_map = {'Vợ': 'Wife', 'Con cái': 'Own-child', 'Chồng': 'Husband', 'Không ở cùng gia đình': 'Not-in-family', 'Họ hàng khác': 'Other-relative', 'Không kết hôn': 'Unmarried'}
-race_map = {'Da trắng': 'White', 'Châu Á - Thái Bình Dương': 'Asian-Pac-Islander', 'Châu Mỹ bản địa': 'Amer-Indian-Eskimo', 'Khác': 'Other', 'Da đen': 'Black'}
-sex_map = {'Nữ': 'Female', 'Nam': 'Male'}
-country_map = {'Mỹ': 'United-States', 'Campuchia': 'Cambodia', 'Anh': 'England', 'Canada': 'Canada', 'Đức': 'Germany', 'Ấn Độ': 'India', 'Nhật Bản': 'Japan', 'Hàn Quốc': 'South', 'Trung Quốc': 'China', 'Cuba': 'Cuba', 'Việt Nam': 'Vietnam', 'Mexico': 'Mexico', 'Pháp': 'France'}
+# Load model and preprocessor
+MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'best_model.joblib')
+PREPROCESSOR_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'preprocessor.joblib')
+FEATURE_NAMES_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'feature_names.txt')
 
-# 2. Form nhập liệu (Input)
-st.header("1. Nhập thông tin (Input)")
-col1, col2 = st.columns(2)
+# Global variables for model and preprocessor
+model = None
+preprocessor = None
+feature_names = None
 
-with col1:
-    age = st.number_input("Tuổi", 17, 90, 30)
-    sel_workclass = st.selectbox("Nơi làm việc", list(workclass_map.keys()))
-    sel_edu = st.selectbox("Trình độ Học vấn", list(edu_map.keys()))
-    education_num = st.number_input("Số năm đi học (tương đối)", 1, 16, 13)
-    sel_marital = st.selectbox("Tình trạng Hôn nhân", list(marital_map.keys()))
-    sel_occ = st.selectbox("Nghề nghiệp", list(occ_map.keys()))
-    sel_rel = st.selectbox("Mối quan hệ trong nhà", list(rel_map.keys()))
-
-with col2:
-    sel_race = st.selectbox("Chủng tộc", list(race_map.keys()))
-    sel_sex = st.selectbox("Giới tính", list(sex_map.keys()))
-    capital_gain = st.number_input("Thu nhập đầu tư/Chứng khoán ($)", 0, 100000, 0)
-    capital_loss = st.number_input("Lỗ đầu tư ($)", 0, 5000, 0)
-    hours_per_week = st.number_input("Số giờ làm việc/tuần", 1, 99, 40)
-    sel_country = st.selectbox("Quốc gia gốc", list(country_map.keys()))
-    fnlwgt = st.number_input("Trọng số dân số (Fnlwgt)", 10000, 1500000, 200000)
-
-# 3. Dự đoán và Giải thích
-if st.button("Dự đoán Thu Nhập", type="primary"):
-    # Lấy giá trị Tiếng Anh gốc để đưa vào mô hình [cite: 17]
-    input_data = pd.DataFrame([[
-        age, workclass_map[sel_workclass], fnlwgt, edu_map[sel_edu], education_num, 
-        marital_map[sel_marital], occ_map[sel_occ], rel_map[sel_rel], race_map[sel_race], 
-        sex_map[sel_sex], capital_gain, capital_loss, hours_per_week, country_map[sel_country]
-    ]], columns=['age', 'workclass', 'fnlwgt', 'education', 'education-num', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'capital-gain', 'capital-loss', 'hours-per-week', 'native-country'])
+def load_model():
+    """Load the trained model and preprocessor"""
+    global model, preprocessor, feature_names
     
-    prediction = model.predict(input_data)[0]
-    probability = model.predict_proba(input_data)[0][1]
-    
-    st.header("2. Kết quả Dự đoán")
-    if prediction == 1:
-        st.success(f"🎉 Dự đoán: Thu nhập **LỚN HƠN 50,000 USD/năm** (Xác suất: {probability:.2%})")
-    else:
-        st.error(f"📉 Dự đoán: Thu nhập **NHỎ HƠN HOẶC BẰNG 50,000 USD/năm** (Xác suất: {1 - probability:.2%})")
+    try:
+        model = joblib.load(MODEL_PATH)
+        preprocessor = joblib.load(PREPROCESSOR_PATH)
         
-    st.header("3. Giải thích Mô hình (Explainability)")
-    st.info("💡 **Giải thích:** Mô hình Logistic Regression này đánh giá rất cao các yếu tố như **Thu nhập đầu tư** và việc **Đã kết hôn** trong việc làm tăng xác suất thu nhập trên 50K. Ngược lại, những nghề như **Giúp việc nhà** sẽ làm giảm mạnh xác suất này.")
+        with open(FEATURE_NAMES_PATH, 'r') as f:
+            feature_names = [line.strip() for line in f.readlines()]
+        
+        print("Model and preprocessor loaded successfully!")
+        return True
+    except Exception as e:
+        print(f"Error loading model: {e}")
+        return False
 
-# 4. Ethics / Limitations
-st.header("4. Cảnh báo Đạo đức & Hạn chế (Ethics & Limitations)")
-st.warning("⚠️ **Cảnh báo:** Mô hình này được huấn luyện trên dữ liệu cũ. Phân tích Audit cho thấy mô hình có **thiên kiến (bias)**, dự đoán kém chính xác hơn đối với Nữ giới. **Tuyệt đối không sử dụng** mô hình này để ra quyết định tuyển dụng hay trả lương thực tế[cite: 17, 32].")
+# Load model on startup
+load_model()
 
-# 5. Tích hợp Chatbot vào thanh Sidebar
-with st.sidebar:
-    st.header("Trợ lý Dự án 🤖")
-    st.markdown("Hỏi tôi về: 'mô hình', 'hạn chế', hoặc 'dữ liệu'")
+# Feature definitions for the form
+FEATURE_DEFINITIONS = {
+    'age': {
+        'label': 'Age',
+        'type': 'number',
+        'min': 17,
+        'max': 90,
+        'default': 30,
+        'description': 'Age of the person'
+    },
+    'workclass': {
+        'label': 'Workclass',
+        'type': 'select',
+        'options': ['Private', 'Self-emp-not-inc', 'Self-emp-inc', 'Federal-gov', 
+                   'Local-gov', 'State-gov', 'Without-pay', 'Never-worked', 'Unknown'],
+        'default': 'Private',
+        'description': 'Type of employment'
+    },
+    'fnlwgt': {
+        'label': 'Final Weight',
+        'type': 'number',
+        'min': 10000,
+        'max': 1500000,
+        'default': 200000,
+        'description': 'Census weight representing population demographics'
+    },
+    'education': {
+        'label': 'Education',
+        'type': 'select',
+        'options': ['Preschool', '1st-4th', '5th-6th', '7th-8th', '9th', '10th', 
+                   '11th', '12th', 'HS-grad', 'Some-college', 'Assoc-voc', 
+                   'Assoc-acdm', 'Bachelors', 'Masters', 'Prof-school', 'Doctorate'],
+        'default': 'HS-grad',
+        'description': 'Highest education level achieved'
+    },
+    'education-num': {
+        'label': 'Education Number',
+        'type': 'number',
+        'min': 1,
+        'max': 16,
+        'default': 10,
+        'description': 'Number of years of education'
+    },
+    'marital-status': {
+        'label': 'Marital Status',
+        'type': 'select',
+        'options': ['Married-civ-spouse', 'Divorced', 'Never-married', 'Separated',
+                   'Widowed', 'Married-spouse-absent', 'Married-AF-spouse'],
+        'default': 'Never-married',
+        'description': 'Current marital status'
+    },
+    'occupation': {
+        'label': 'Occupation',
+        'type': 'select',
+        'options': ['Tech-support', 'Craft-repair', 'Other-service', 'Sales',
+                   'Exec-managerial', 'Prof-specialty', 'Handlers-cleaners',
+                   'Machine-op-inspct', 'Adm-clerical', 'Farming-fishing',
+                   'Transport-moving', 'Priv-house-serv', 'Protective-serv',
+                   'Armed-Forces', 'Unknown'],
+        'default': 'Sales',
+        'description': 'Type of occupation'
+    },
+    'relationship': {
+        'label': 'Relationship',
+        'type': 'select',
+        'options': ['Wife', 'Own-child', 'Husband', 'Not-in-family', 
+                   'Other-relative', 'Unmarried'],
+        'default': 'Not-in-family',
+        'description': 'Family relationship role'
+    },
+    'race': {
+        'label': 'Race',
+        'type': 'select',
+        'options': ['White', 'Asian-Pac-Islander', 'Amer-Indian-Eskimo', 
+                   'Other', 'Black'],
+        'default': 'White',
+        'description': 'Self-reported race'
+    },
+    'sex': {
+        'label': 'Sex',
+        'type': 'select',
+        'options': ['Male', 'Female'],
+        'default': 'Male',
+        'description': 'Gender'
+    },
+    'capital-gain': {
+        'label': 'Capital Gain',
+        'type': 'number',
+        'min': 0,
+        'max': 100000,
+        'default': 0,
+        'description': 'Capital gains income (USD)'
+    },
+    'capital-loss': {
+        'label': 'Capital Loss',
+        'type': 'number',
+        'min': 0,
+        'max': 5000,
+        'default': 0,
+        'description': 'Capital losses (USD)'
+    },
+    'hours-per-week': {
+        'label': 'Hours per Week',
+        'type': 'number',
+        'min': 1,
+        'max': 99,
+        'default': 40,
+        'description': 'Average hours worked per week'
+    },
+    'native-country': {
+        'label': 'Native Country',
+        'type': 'select',
+        'options': ['United-States', 'Cuba', 'Jamaica', 'India', 'Mexico', 'South',
+                   'Puerto-Rico', 'Honduras', 'England', 'Canada', 'Germany', 'Iran',
+                   'Philippines', 'Italy', 'Poland', 'Columbia', 'Cambodia', 'Thailand',
+                   'Ecuador', 'Laos', 'Taiwan', 'Haiti', 'Portugal', 'Dominican-Republic',
+                   'El-Salvador', 'France', 'Guatemala', 'China', 'Japan', 'Yemen',
+                   'Nicaragua', 'Peru', 'Greece', 'Trinadad&Tobago', 
+                   'Outlying-US(Guam-USVI-etc)', 'Hungary', 'Hong', 'Ireland',
+                   'Holand-Netherlands', 'Unknown'],
+        'default': 'United-States',
+        'description': 'Country of birth'
+    }
+}
 
-    # Khởi tạo lịch sử chat
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+@app.route('/')
+def index():
+    """Render main page"""
+    return render_template('index.html', features=FEATURE_DEFINITIONS)
 
-    # Tạo một container riêng cho tin nhắn để có thể cuộn (scroll)
-    chat_container = st.container(height=400)
-
-    # Hiển thị lịch sử trong container
-    for message in st.session_state.messages:
-        with chat_container.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    # Ô nhập liệu chat nằm ở dưới cùng của sidebar
-    if prompt := st.chat_input("Nhập câu hỏi tại đây..."):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with chat_container.chat_message("user"):
-            st.markdown(prompt)
-
-        # Logic trả lời
-        prompt_lower = prompt.lower()
-        if "giải thích" in prompt_lower or "mô hình" in prompt_lower:
-            response = "Mô hình dùng Logistic Regression. Yếu tố tăng thu nhập mạnh nhất là 'Capital Gain' (Đầu tư) và 'Married-civ-spouse' (Kết hôn)."
-        elif "hạn chế" in prompt_lower or "thiên kiến" in prompt_lower:
-            response = "Mô hình có thiên kiến giới tính (bias), dự đoán Nữ giới kém chính xác hơn Nam giới. Không dùng để quyết định thực tế."
-        elif "eda" in prompt_lower or "dữ liệu" in prompt_lower:
-            response = "Phân tích cho thấy học vấn cao và làm nhiều giờ/tuần có tỉ lệ đạt thu nhập >50K cao nhất."
+@app.route('/predict', methods=['POST'])
+def predict():
+    """Make prediction from form data"""
+    try:
+        # Get form data
+        data = {}
+        for key in FEATURE_DEFINITIONS.keys():
+            if FEATURE_DEFINITIONS[key]['type'] == 'number':
+                data[key] = float(request.form.get(key, FEATURE_DEFINITIONS[key]['default']))
+            else:
+                data[key] = request.form.get(key, FEATURE_DEFINITIONS[key]['default'])
+        
+        # Create DataFrame
+        input_df = pd.DataFrame([data])
+        
+        # Transform using preprocessor
+        X = preprocessor.transform(input_df)
+        
+        # Make prediction
+        if hasattr(model, 'predict_proba'):
+            proba = model.predict_proba(X)[0]
+            prediction = 1 if proba[1] > 0.5 else 0
+            confidence = proba[1] if prediction == 1 else proba[0]
         else:
-            response = "Tôi chỉ giải đáp về: 'mô hình', 'hạn chế', và 'dữ liệu'."
+            prediction = model.predict(X)[0]
+            decision = model.decision_function(X)[0] if hasattr(model, 'decision_function') else 0
+            confidence = min(abs(decision) / 3, 1.0)
+        
+        # Generate explanation
+        explanation = generate_explanation(data, prediction, confidence)
+        
+        # Generate ethics warning
+        ethics_warning = generate_ethics_warning()
+        
+        result = {
+            'success': True,
+            'prediction': '>50K' if prediction == 1 else '<=50K',
+            'confidence': f"{confidence*100:.1f}%",
+            'explanation': explanation,
+            'ethics_warning': ethics_warning
+        }
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        })
 
-        with chat_container.chat_message("assistant"):
-            st.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+def generate_explanation(data, prediction, confidence):
+    """Generate human-readable explanation for the prediction"""
+    explanation = []
+    
+    # Base explanation
+    if prediction == 1:
+        explanation.append(f"The model predicts income **>50K/year** with {confidence*100:.1f}% confidence.")
+    else:
+        explanation.append(f"The model predicts income **<=50K/year** with {confidence*100:.1f}% confidence.")
+    
+    # Key factors
+    factors = []
+    
+    # Education factor
+    edu_level = data['education-num']
+    if edu_level >= 13:
+        factors.append(f"High education level ({data['education']}) - positive factor")
+    elif edu_level <= 9:
+        factors.append(f"Lower education level ({data['education']}) - limiting factor")
+    
+    # Age factor
+    age = data['age']
+    if age >= 35 and age <= 55:
+        factors.append(f"Age in peak earning years ({int(age)} years)")
+    elif age < 25:
+        factors.append(f"Young age ({int(age)} years) - typically correlates with lower income")
+    
+    # Hours per week
+    hours = data['hours-per-week']
+    if hours > 45:
+        factors.append(f"Works many hours ({int(hours)} hours/week)")
+    elif hours < 30:
+        factors.append(f"Part-time work ({int(hours)} hours/week)")
+    
+    # Occupation
+    high_income_occ = ['Exec-managerial', 'Prof-specialty']
+    if data['occupation'] in high_income_occ:
+        factors.append(f"High-income occupation ({data['occupation']})")
+    
+    # Capital gain
+    if data['capital-gain'] > 5000:
+        factors.append(f"Significant capital gains (${int(data['capital-gain']):,})")
+    
+    if factors:
+        explanation.append("\n**Key influencing factors:**")
+        for factor in factors:
+            explanation.append(f"- {factor}")
+    
+    return "\n".join(explanation)
+
+def generate_ethics_warning():
+    """Generate ethics and limitations warning"""
+    warning = {
+        'title': 'Ethics & Limitations Warning',
+        'points': [
+            {
+                'title': 'No Social Inference',
+                'content': 'This model is based on statistical data and does not reflect individual worth or potential.'
+            },
+            {
+                'title': 'Bias in Data',
+                'content': 'Training data may contain historical biases regarding gender, race, and country of origin.'
+            },
+            {
+                'title': 'Prediction Limitations',
+                'content': 'The model only predicts probability based on demographic features, not actual individual capability.'
+            },
+            {
+                'title': 'Not for Employment Decisions',
+                'content': 'Results should not be used for hiring, lending, or personal evaluation decisions.'
+            },
+            {
+                'title': 'Temporal Context',
+                'content': 'Data from 1994 may not accurately reflect current economic conditions.'
+            }
+        ]
+    }
+    return warning
+
+@app.route('/api/features')
+def get_features():
+    """API endpoint to get feature definitions"""
+    return jsonify(FEATURE_DEFINITIONS)
+
+@app.route('/health')
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy',
+        'model_loaded': model is not None,
+        'preprocessor_loaded': preprocessor is not None
+    })
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)

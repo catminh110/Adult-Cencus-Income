@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Prediction - Adult Census</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: 30px auto;
+            max-width: 1200px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #1a252f 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .form-section {
+            padding: 30px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-text {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+        
+        .btn-predict {
+            background: linear-gradient(135deg, var(--success-color) 0%, #219a52 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+        }
+        
+        .result-section {
+            padding: 30px;
+            background: #f8f9fa;
+            display: none;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .prediction-high {
+            border-left: 5px solid var(--success-color);
+        }
+        
+        .prediction-low {
+            border-left: 5px solid var(--danger-color);
+        }
+        
+        .prediction-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .prediction-high .prediction-value {
+            color: var(--success-color);
+        }
+        
+        .prediction-low .prediction-value {
+            color: var(--danger-color);
+        }
+        
+        .confidence-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .explanation-box {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .explanation-box h5 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .explanation-box p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .ethics-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .ethics-warning h5 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+        
+        .ethics-point {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            border-left: 3px solid var(--warning-color);
+        }
+        
+        .ethics-point h6 {
+            color: #856404;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .ethics-point p {
+            color: #6c5c1e;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .chatbot-section {
+            padding: 30px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        
+        .chat-message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+        
+        .chat-message.user {
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .chat-bubble {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+        }
+        
+        .chat-message.bot .chat-bubble {
+            background: white;
+            border: 1px solid #e0e0e0;
+            color: var(--secondary-color);
+        }
+        
+        .chat-message.user .chat-bubble {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .chat-input-group {
+            margin-top: 15px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .feature-icon {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+        
+        .section-title {
+            color: var(--secondary-color);
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-chart-line"></i> Income Prediction</h1>
+                <p>Predict income based on census demographics (Adult Census Income Dataset)</p>
+            </div>
+
+            <!-- Form Section -->
+            <div class="form-section">
+                <h3 class="section-title"><i class="fas fa-user-edit feature-icon"></i>Enter Information</h3>
+                <form id="predictionForm">
+                    <div class="row">
+                        {% for key, feature in features.items() %}
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ key }}" class="form-label">
+                                <i class="fas fa-info-circle feature-icon"></i>{{ feature.label }}
+                            </label>
+                            {% if feature.type == 'number' %}
+                            <input type="number" class="form-control" id="{{ key }}" name="{{ key }}"
+                                   min="{{ feature.min }}" max="{{ feature.max }}" value="{{ feature.default }}"
+                                   required>
+                            {% else %}
+                            <select class="form-select" id="{{ key }}" name="{{ key }}" required>
+                                {% for option in feature.options %}
+                                <option value="{{ option }}" {% if option == feature.default %}selected{% endif %}>
+                                    {{ option }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                            <div class="form-text">{{ feature.description }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-predict">
+                                <i class="fas fa-calculator"></i> Predict Income
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section" id="resultSection">
+                <h3 class="section-title"><i class="fas fa-poll feature-icon"></i>Prediction Result</h3>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="result-card" id="predictionCard">
+                            <h5><i class="fas fa-money-bill-wave"></i> Predicted Income</h5>
+                            <div class="prediction-value" id="predictionValue">--</div>
+                            <span class="confidence-badge" id="confidenceBadge">--</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="result-card">
+                            <h5><i class="fas fa-lightbulb"></i> Explanation</h5>
+                            <div class="explanation-box" id="explanationBox">
+                                <!-- Explanation content will be inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ethics Warning -->
+                <div class="ethics-warning" id="ethicsWarning">
+                    <!-- Ethics warning content will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Chatbot Section -->
+            <div class="chatbot-section">
+                <h3 class="section-title"><i class="fas fa-robot feature-icon"></i>Chatbot - Ask about the prediction</h3>
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-message bot">
+                        <div class="chat-bubble">
+                            Hello! I'm an AI assistant to help explain the income prediction.<br>
+                            You can ask me about:<br>
+                            - Why did the model make this prediction?<br>
+                            - What factors influence income?<br>
+                            - What are the model's limitations and biases?<br>
+                            - How accurate is the model?
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="chatInput" 
+                               placeholder="Type your question...">
+                        <button class="btn btn-primary" type="button" id="sendButton">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Current prediction data for chatbot context
+        let currentPrediction = null;
+        let currentFormData = null;
+
+        // Form submission
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            // Collect form data
+            const formData = new FormData(this);
+            currentFormData = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentPrediction = result;
+                    displayResult(result);
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Connection error: ' + error.message);
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        });
+
+        function displayResult(result) {
+            const resultSection = document.getElementById('resultSection');
+            const predictionCard = document.getElementById('predictionCard');
+            const predictionValue = document.getElementById('predictionValue');
+            const confidenceBadge = document.getElementById('confidenceBadge');
+            const explanationBox = document.getElementById('explanationBox');
+            const ethicsWarning = document.getElementById('ethicsWarning');
+            
+            // Show result section
+            resultSection.style.display = 'block';
+            
+            // Update prediction
+            const isHighIncome = result.prediction === '>50K';
+            predictionCard.className = 'result-card ' + (isHighIncome ? 'prediction-high' : 'prediction-low');
+            predictionValue.textContent = result.prediction;
+            confidenceBadge.textContent = 'Confidence: ' + result.confidence;
+            confidenceBadge.style.background = isHighIncome ? '#d4edda' : '#f8d7da';
+            confidenceBadge.style.color = isHighIncome ? '#155724' : '#721c24';
+            
+            // Update explanation
+            explanationBox.innerHTML = result.explanation.replace(/\n/g, '<br>');
+            
+            // Update ethics warning
+            let ethicsHTML = `<h5><i class="fas fa-exclamation-triangle"></i> ${result.ethics_warning.title}</h5>`;
+            result.ethics_warning.points.forEach(point => {
+                ethicsHTML += `
+                    <div class="ethics-point">
+                        <h6>${point.title}</h6>
+                        <p>${point.content}</p>
+                    </div>
+                `;
+            });
+            ethicsWarning.innerHTML = ethicsHTML;
+            
+            // Scroll to result
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Chatbot functionality
+        const chatContainer = document.getElementById('chatContainer');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message ' + (isUser ? 'user' : 'bot');
+            messageDiv.innerHTML = `<div class="chat-bubble">${message}</div>`;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            addMessage(message, true);
+            chatInput.value = '';
+            
+            // Generate response based on message content
+            const response = generateChatbotResponse(message);
+            
+            // Simulate typing delay
+            setTimeout(() => {
+                addMessage(response);
+            }, 500);
+        }
+
+        function generateChatbotResponse(message) {
+            const lowerMsg = message.toLowerCase();
+            
+            // Check for keywords and generate appropriate response
+            if (lowerMsg.includes('why') || lowerMsg.includes('reason') || lowerMsg.includes('explain')) {
+                if (!currentPrediction) {
+                    return 'Please make a prediction first so I can explain the results. Key factors affecting income include: education level, age, hours worked, and occupation.';
+                }
+                return currentPrediction.explanation;
+            }
+            
+            if (lowerMsg.includes('factor') || lowerMsg.includes('influence') || lowerMsg.includes('affect')) {
+                return `Key factors affecting income prediction:<br><br>
+                <strong>1. Education (education-num):</strong> More years of education increases probability of >50K income.<br><br>
+                <strong>2. Age:</strong> People aged 35-55 typically have higher incomes.<br><br>
+                <strong>3. Hours per week:</strong> Working more hours correlates with higher income.<br><br>
+                <strong>4. Occupation:</strong> Exec-managerial and Prof-specialty occupations have higher income potential.<br><br>
+                <strong>5. Capital gain:</strong> Having investment income is a strong positive factor.`;
+            }
+            
+            if (lowerMsg.includes('bias') || lowerMsg.includes('ethics') || lowerMsg.includes('limitation')) {
+                return `<strong>Model Limitations and Ethics:</strong><br><br>
+                <strong>1. Data Bias:</strong> The 1994 dataset may reflect historical biases about gender and race.<br><br>
+                <strong>2. Not Individual Potential:</strong> The model only predicts based on demographic features, not actual individual capability.<br><br>
+                <strong>3. Temporal Context:</strong> Data from 1994 may not reflect current economic conditions.<br><br>
+                <strong>4. Usage Warning:</strong> Should not be used for hiring, lending, or personal evaluation decisions.`;
+            }
+            
+            if (lowerMsg.includes('accurate') || lowerMsg.includes('accuracy') || lowerMsg.includes('performance')) {
+                return `Model Performance (Stratified 5-Fold Cross-Validation):<br><br>
+                <strong>- ROC-AUC:</strong> ~0.90 (good discrimination ability)<br>
+                <strong>- PR-AUC:</strong> ~0.78 (effective for imbalanced data)<br>
+                <strong>- F1-Score:</strong> ~0.70 (balanced precision and recall)<br><br>
+                However, accuracy does not guarantee correct predictions for specific individuals. The model only provides probability based on demographic features.`;
+            }
+            
+            if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
+                return 'Hello! How can I help you with the income prediction? You can ask about the prediction reason, influencing factors, or model ethics and limitations.';
+            }
+            
+            // Default response
+            return `Thank you for your question. I can help you with:<br><br>
+            - <strong>Prediction Explanation:</strong> Why did the model give this result?<br>
+            - <strong>Influencing Factors:</strong> Which features are most important?<br>
+            - <strong>Ethics & Limitations:</strong> What are the model's constraints?<br>
+            - <strong>Accuracy:</strong> How reliable is the model?<br><br>
+            Please ask a more specific question for better assistance!`;
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
