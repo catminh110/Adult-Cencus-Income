@@ -10,3 +10,21 @@
 2026-03-23 15:30:17,251 - INFO - Target distribution: {0: 24720, 1: 7841}
 2026-03-23 15:30:35,765 - INFO - Processed data saved to /mnt/okcomputer/output/adult_income_project/data/processed/adult_processed.csv
 2026-03-23 15:30:35,784 - INFO - Preprocessor saved to /mnt/okcomputer/output/adult_income_project/models/preprocessor.joblib
+2026-03-24 07:51:14,501 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.50.23:5000
+2026-03-24 07:51:14,502 - INFO - [33mPress CTRL+C to quit[0m
+2026-03-24 07:51:14,502 - INFO -  * Restarting with stat
+2026-03-24 07:51:15,645 - WARNING -  * Debugger is active!
+2026-03-24 07:51:15,646 - INFO -  * Debugger PIN: 122-911-955
+2026-03-24 07:51:36,122 - INFO - 127.0.0.1 - - [24/Mar/2026 07:51:36] "GET / HTTP/1.1" 200 -
+2026-03-24 07:51:36,560 - INFO - 127.0.0.1 - - [24/Mar/2026 07:51:36] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-24 07:52:00,331 - INFO - Handling missing values...
+2026-03-24 07:52:00,333 - INFO - Missing values ('?') before processing: 0
+2026-03-24 07:52:00,336 - INFO - Missing values ('?') after processing: 0
+2026-03-24 07:52:00,344 - INFO - 127.0.0.1 - - [24/Mar/2026 07:52:00] "POST /predict HTTP/1.1" 200 -
+2026-03-24 07:52:40,693 - INFO - Handling missing values...
+2026-03-24 07:52:40,695 - INFO - Missing values ('?') before processing: 0
+2026-03-24 07:52:40,697 - INFO - Missing values ('?') after processing: 0
+2026-03-24 07:52:40,703 - INFO - 127.0.0.1 - - [24/Mar/2026 07:52:40] "POST /predict HTTP/1.1" 200 -

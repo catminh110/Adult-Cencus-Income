@@ -26,7 +26,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('/mnt/okcomputer/output/adult_income_project/logs/training.log'),
+        logging.FileHandler('logs/training.log'),
         logging.StreamHandler()
     ]
 )
@@ -448,7 +448,7 @@ def main():
     results = trainer.train_and_evaluate_all(X, y)
     
     # Generate visualizations
-    output_dir = '/mnt/okcomputer/output/adult_income_project/reports/figures'
+    output_dir = 'reports/figures'
     trainer.plot_roc_curves(X, y, output_dir)
     trainer.plot_pr_curves(X, y, output_dir)
     trainer.plot_coefficients(feature_names, output_dir)
@@ -457,7 +457,7 @@ def main():
     results_df = trainer.save_results_table(output_dir)
     
     # Save best model
-    models_dir = '/mnt/okcomputer/output/adult_income_project/models'
+    models_dir = 'models'
     best_model = trainer.save_best_model(X, y, models_dir)
     
     # Save preprocessor

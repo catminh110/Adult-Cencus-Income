@@ -264,7 +264,7 @@ def main():
     df = pd.read_csv(RAW_DATA_FILE)
     
     # Initialize analyzer
-    analyzer = EDAAnalyzer(df, output_dir='/mnt/okcomputer/output/adult_income_project/reports/figures')
+    analyzer = EDAAnalyzer(df, output_dir='reports/figures')
     
     # Generate report
     report = analyzer.generate_full_report()

@@ -16,7 +16,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('/mnt/okcomputer/output/adult_income_project/logs/preprocessing.log'),
+        logging.FileHandler('logs/preprocessing.log'),
         logging.StreamHandler()
     ]
 )

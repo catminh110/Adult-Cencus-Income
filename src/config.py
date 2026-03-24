@@ -8,8 +8,8 @@ import numpy as np
 RANDOM_SEED = 42
 np.random.seed(RANDOM_SEED)
 
-# Paths
-BASE_DIR = '/mnt/okcomputer/output/adult_income_project'
+# Paths - Use relative path from project root
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_RAW_DIR = os.path.join(BASE_DIR, 'data', 'raw')
 DATA_PROCESSED_DIR = os.path.join(BASE_DIR, 'data', 'processed')
 MODELS_DIR = os.path.join(BASE_DIR, 'models')
