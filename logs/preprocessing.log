@@ -28,3 +28,23 @@
 2026-03-24 07:52:40,695 - INFO - Missing values ('?') before processing: 0
 2026-03-24 07:52:40,697 - INFO - Missing values ('?') after processing: 0
 2026-03-24 07:52:40,703 - INFO - 127.0.0.1 - - [24/Mar/2026 07:52:40] "POST /predict HTTP/1.1" 200 -
+2026-03-24 07:56:35,505 - INFO - 192.168.50.23 - - [24/Mar/2026 07:56:35] "GET / HTTP/1.1" 200 -
+2026-03-24 07:56:35,936 - INFO - 192.168.50.23 - - [24/Mar/2026 07:56:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-24 07:57:10,562 - INFO - 192.168.50.2 - - [24/Mar/2026 07:57:10] "GET /?fbclid=IwY2xjawQuwLZleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAwzNTA2ODU1MzE3MjgAAR6ZwlFdJZ6oizMQVXPq-a3ebdBrTJ3AUGyknlhmMZxkaro-3GU4v54uCCwNOg_aem_CO43XQuZ9pxpUmmNvevatQ HTTP/1.1" 200 -
+2026-03-24 07:57:11,025 - INFO - 192.168.50.2 - - [24/Mar/2026 07:57:11] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-03-24 08:10:35,873 - INFO -  * Detected change in 'C:\\Users\\Suna\\Documents\\Coding Project\\Adult-Cencus-Income\\src\\data_preprocessing.py', reloading
+2026-03-24 08:10:36,081 - INFO -  * Restarting with stat
+2026-03-24 08:10:37,122 - WARNING -  * Debugger is active!
+2026-03-24 08:10:37,123 - INFO -  * Debugger PIN: 122-911-955
+2026-03-24 08:11:18,766 - INFO -  * Detected change in 'C:\\Users\\Suna\\Documents\\Coding Project\\Adult-Cencus-Income\\src\\models.py', reloading
+2026-03-24 08:11:18,897 - INFO -  * Restarting with stat
+2026-03-24 08:11:19,879 - WARNING -  * Debugger is active!
+2026-03-24 08:11:19,880 - INFO -  * Debugger PIN: 122-911-955
+2026-03-24 08:14:39,325 - INFO -  * Detected change in 'C:\\Users\\Suna\\Documents\\Coding Project\\Adult-Cencus-Income\\src\\models.py', reloading
+2026-03-24 08:14:39,513 - INFO -  * Restarting with stat
+2026-03-24 08:14:40,669 - WARNING -  * Debugger is active!
+2026-03-24 08:14:40,671 - INFO -  * Debugger PIN: 122-911-955
+2026-03-24 08:22:28,411 - INFO -  * Detected change in 'C:\\Users\\Suna\\Documents\\Coding Project\\Adult-Cencus-Income\\src\\models.py', reloading
+2026-03-24 08:22:28,611 - INFO -  * Restarting with stat
+2026-03-24 08:22:29,658 - WARNING -  * Debugger is active!
+2026-03-24 08:22:29,659 - INFO -  * Debugger PIN: 122-911-955

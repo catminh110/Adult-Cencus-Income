@@ -11,7 +11,7 @@ This project implements:
 - **Ablation Study:** L1 vs L2 comparison, LogReg vs Linear SVC
 - **Evaluation:** Stratified 5-Fold CV with ROC-AUC, PR-AUC, F1
 - **Web App:** Flask application with prediction, explanation, and ethics warnings
-- **Chatbot:** AI assistant for explaining predictions and limitations
+- **Chatbot:** Virtual assistant for explaining predictions and limitations
 
 ## Project Structure
 

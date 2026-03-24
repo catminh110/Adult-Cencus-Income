@@ -197,10 +197,10 @@ def main():
     logger.info(f"Processed data saved to {PROCESSED_DATA_FILE}")
     
     # Save preprocessor
-    preprocessor.save('/mnt/okcomputer/output/adult_income_project/models/preprocessor.joblib')
+    preprocessor.save('models/preprocessor.joblib')
     
     # Save feature names
-    with open('/mnt/okcomputer/output/adult_income_project/models/feature_names.txt', 'w') as f:
+    with open('models/feature_names.txt', 'w') as f:
         f.write('\n'.join(feature_names))
     
     return X, y, feature_names

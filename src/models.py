@@ -2,6 +2,10 @@
 Model Training and Evaluation Module
 Implements baselines, Logistic Regression, Linear SVC with ablation studies
 """
+import warnings
+# Suppress sklearn deprecation warnings
+warnings.filterwarnings('ignore', category=FutureWarning)
+warnings.filterwarnings('ignore', category=UserWarning)
 import pandas as pd
 import numpy as np
 from sklearn.dummy import DummyClassifier
