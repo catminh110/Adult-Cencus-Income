@@ -22,8 +22,9 @@ adult_income_project/
 │   │   ├── adult.csv           # Training data (32,561 samples)
 │   │   └── adult_test.csv      # Test data (16,281 samples)
 │   └── processed/              # Processed data
-├── notebooks/
-│   └── 01_complete_pipeline.ipynb  # Jupyter notebook
+├── logs/                         # Log files
+│   ├── preprocessing.log
+│   └── training.log
 ├── src/
 │   ├── config.py               # Configuration
 │   ├── data_preprocessing.py   # Preprocessing module
@@ -38,7 +39,9 @@ adult_income_project/
 │   │   ├── roc_curves.png
 │   │   ├── pr_curves.png
 │   │   ├── coefficient_plot.png
-│   │   └── model_comparison.csv
+│   │   ├── correlation_matrix.png
+│   │   ├── model_comparison.csv
+│   │   └── model_comparison_formatted.csv
 │   └── scientific_report.md    # Research paper
 ├── app/
 │   ├── app.py                  # Flask application
@@ -54,11 +57,28 @@ adult_income_project/
 
 ## Installation
 
+### Option 1: Using Virtual Environment (Recommended)
+
 ```bash
 # Clone or download the project
 cd adult_income_project
 
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+
 # Install dependencies
+pip install -r requirements.txt
+```
+
+### Option 2: Direct Installation
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -93,7 +113,7 @@ Access at: http://localhost:5000
 |-------|---------|--------|----------|
 | Majority | 0.5000 ± 0.0000 | 0.2408 ± 0.0000 | 0.0000 ± 0.0000 |
 | **LogReg_L1_C1** | **0.9068 ± 0.0017** | **0.7672 ± 0.0088** | **0.6626 ± 0.0070** |
-| LogReg_L2_C1 | 0.9067 ± 0.0017 | 0.7670 ± 0.0088 | 0.6624 ± 0.0070 |
+| LogReg_L2_C1 | 0.9067 ± 0.0017 | 0.7670 ± 0.0088 | 0.6625 ± 0.0071 |
 | LinearSVC_C1 | 0.9065 ± 0.0015 | 0.7668 ± 0.0087 | 0.6591 ± 0.0067 |
 
 ### Best Model
