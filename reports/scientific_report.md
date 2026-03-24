@@ -125,6 +125,14 @@ $$\min_{w,b} \frac{1}{2}||w||^2 + C \sum_{i=1}^n \max(0, 1 - y_i(w^T x_i + b))$$
 - Racial disparities exist in income distribution
 - Exec-managerial and Prof-specialty occupations have highest rates
 
+#### Correlation Matrix
+![Correlation Matrix](figures/correlation_matrix.png)
+
+**Key Findings:**
+- education-num has the strongest positive correlation with income
+- age shows moderate positive correlation with income
+- capital-gain and capital-loss show weak correlations
+
 ### 3.2 Model Comparison
 
 #### Stratified 5-Fold CV Results
@@ -133,8 +141,10 @@ $$\min_{w,b} \frac{1}{2}||w||^2 + C \sum_{i=1}^n \max(0, 1 - y_i(w^T x_i + b))$$
 |-------|---------|--------|----------|
 | Majority | 0.5000 ± 0.0000 | 0.2408 ± 0.0000 | 0.0000 ± 0.0000 |
 | LogReg_L1_C1 | **0.9068 ± 0.0017** | **0.7672 ± 0.0088** | **0.6626 ± 0.0070** |
-| LogReg_L2_C1 | 0.9067 ± 0.0017 | 0.7670 ± 0.0088 | 0.6624 ± 0.0070 |
+| LogReg_L2_C1 | 0.9067 ± 0.0017 | 0.7670 ± 0.0088 | 0.6625 ± 0.0071 |
 | LinearSVC_C1 | 0.9065 ± 0.0015 | 0.7668 ± 0.0087 | 0.6591 ± 0.0067 |
+
+*Detailed results available in `figures/model_comparison_formatted.csv`*
 
 #### ROC Curves
 ![ROC Curves](figures/roc_curves.png)
@@ -144,14 +154,14 @@ $$\min_{w,b} \frac{1}{2}||w||^2 + C \sum_{i=1}^n \max(0, 1 - y_i(w^T x_i + b))$$
 
 ### 3.3 Ablation Study: L1 vs L2
 
-| Regularization | ROC-AUC | Non-zero Features |
+| Regularization | ROC-AUC | Key Characteristic |
 |----------------|---------|-------------------|
-| L1 (C=1) | 0.9068 ± 0.0017 | 67/100 |
-| L2 (C=1) | 0.9067 ± 0.0017 | 100/100 |
+| L1 (C=1) | 0.9068 ± 0.0017 | Sparse coefficients (feature selection) |
+| L2 (C=1) | 0.9067 ± 0.0017 | All features retained |
 
 **Findings:**
-- L1 produces sparse models with feature selection
-- L2 gives slightly similar performance with all features
+- L1 produces sparse models that perform implicit feature selection
+- L2 gives similar performance with all features retained
 - Both achieve comparable ROC-AUC (~0.907)
 
 ### 3.4 Coefficient Analysis
@@ -182,17 +192,12 @@ One-hot encoding enables linear models to learn non-linear relationships between
 - One-hot + Linear models achieve ROC-AUC ~0.907
 - No overfitting observed despite increased feature count (100 features)
 
-#### RQ2: Subgroup metrics and responsible reporting
-Analysis by demographic groups reveals:
+#### RQ2: Subgroup Analysis
+Analysis by demographic groups reveals significant income rate disparities:
+- Gender gap: Male 30.4% vs Female 10.9% earning >50K
+- Racial disparities exist in income distribution (see demographics analysis)
 
-| Group | >50K Rate | ROC-AUC |
-|-------|-----------|---------|
-| Male | 30.4% | 0.907 |
-| Female | 10.9% | 0.905 |
-| White | 26.2% | 0.907 |
-| Black | 12.3% | 0.903 |
-
-**⚠️ Warning:** Income rate disparities between groups reflect historical biases in the data, not actual individual capabilities.
+**⚠️ Warning:** These disparities reflect historical biases in the 1994 census data, not actual individual capabilities. The model achieves consistent overall ROC-AUC (~0.907), but subgroup-specific performance metrics were not computed in this study.
 
 #### RQ3: LogReg vs Linear SVC trade-off
 | Criterion | LogReg | Linear SVC |
@@ -255,7 +260,6 @@ adult_income_project/
 ├── data/
 │   ├── raw/
 │   └── processed/
-├── notebooks/
 ├── src/
 │   ├── config.py
 │   ├── data_preprocessing.py
@@ -272,6 +276,9 @@ adult_income_project/
 
 ### B. Reproduction Instructions
 ```bash
+# 0. Activate virtual environment (Windows PowerShell)
+venv\Scripts\Activate.ps1
+
 # 1. Install dependencies
 pip install -r requirements.txt
 
@@ -288,14 +295,31 @@ python src/models.py
 python app/app.py
 ```
 
-### C. Confusion Matrix (Best Model)
+### C. Model Artifacts
 
-| | Predicted ≤50K | Predicted >50K |
-|---|:---:|:---:|
-| **Actual ≤50K** | 21,890 | 2,830 |
-| **Actual >50K** | 3,120 | 4,721 |
+The following files are generated after training:
 
-**Metrics:**
-- Precision: 0.625
-- Recall: 0.602
-- Specificity: 0.886
+| File | Description |
+|------|-------------|
+| `models/best_model.joblib` | Trained Logistic Regression L1 model |
+| `models/preprocessor.joblib` | Fitted preprocessing pipeline |
+| `models/feature_names.txt` | List of 100 features after encoding |
+| `models/best_model_info.json` | Model metadata and timestamp |
+
+### D. Feature Importance
+
+Top predictive features from coefficient analysis:
+
+**Positive indicators (>50K):**
+1. education-num (higher education years)
+2. capital-gain
+3. age
+4. hours-per-week
+5. occupation_Exec-managerial
+
+**Negative indicators (≤50K):**
+1. marital-status_Never-married
+2. occupation_Other-service
+3. workclass_Private
+4. relationship_Own-child
+5. sex_Female (reflects historical data bias)
