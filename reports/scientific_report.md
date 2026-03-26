@@ -1,6 +1,6 @@
 # Income Prediction >50K/year from Census Data: A Comparative Analysis of Logistic Regression and Linear SVC
 
-**Authors:** Data Science Team  
+**Authors:** Cao Tran Cat Minh
 **Date:** March 23, 2026  
 **Dataset:** UCI Adult Census Income (ID=2)
 
